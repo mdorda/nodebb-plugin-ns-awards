@@ -194,7 +194,16 @@
                         if (error) {
                             return callback(error);
                         }
-                        callback(null, Object.assign(account, {nsRewards: grants}));
+                        const result = grants.reduce((acc, grant) => {
+                            if (!acc[grant.aid]) {
+                                acc[grant.aid] = grant;
+                                acc[grant.aid].count = 1;
+                            } else {
+                                acc[grant.aid].count += 1;
+                            }
+                            return acc;
+                        }, {});
+                        callback(null, Object.assign(account, {nsRewards: Object.values(result).sort((a, b) => b.aid - a.aid)}));
                     });
                 }
             }
@@ -325,7 +334,16 @@
                             if (error) {
                                 return next(error);
                             }
-                            next(null, Object.assign(post, {nsRewards: grants}));
+                            const result = grants.reduce((acc, grant) => {
+                                if (!acc[grant.aid]) {
+                                    acc[grant.aid] = grant;
+                                    acc[grant.aid].count = 1;
+                                } else {
+                                    acc[grant.aid].count += 1;
+                                }
+                                return acc;
+                            }, {});
+                            next(null, Object.assign(post, {nsRewards: Object.values(result).sort((a, b) => b.aid - a.aid)}));
                         });
                     }, callback);
                 }
